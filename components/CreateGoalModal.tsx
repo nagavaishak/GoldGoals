@@ -1,0 +1,197 @@
+'use client';
+
+import { useState } from 'react';
+
+export default function CreateGoalModal({ onClose }: { onClose: () => void }) {
+  const [formData, setFormData] = useState({
+    title: '',
+    target: '',
+    deadline: '',
+    autoSave: false,
+    frequency: 'weekly',
+    amount: ''
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In real app, this would call GRAIL API
+    alert('Goal created! (Demo only - GRAIL integration coming)');
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b p-6 flex items-center justify-between">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent">
+            Create New Goal
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl"
+          >
+            ×
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Title */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Goal Title
+            </label>
+            <input
+              type="text"
+              placeholder="e.g., Save for Japan trip 🇯🇵"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          {/* Target Amount */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Target Amount (grams of gold)
+            </label>
+            <input
+              type="number"
+              step="0.001"
+              placeholder="e.g., 10"
+              value={formData.target}
+              onChange={(e) => setFormData({ ...formData, target: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              ~${(parseFloat(formData.target) * 65 || 0).toFixed(2)} USD at current gold prices
+            </p>
+          </div>
+
+          {/* Deadline */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Deadline
+            </label>
+            <input
+              type="date"
+              value={formData.deadline}
+              onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          {/* Auto-Save Toggle */}
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-semibold text-gray-700">
+                Enable Auto-Save
+              </label>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, autoSave: !formData.autoSave })}
+                className={`relative w-12 h-6 rounded-full transition ${
+                  formData.autoSave ? 'bg-amber-500' : 'bg-gray-300'
+                }`}
+              >
+                <div
+                  className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                    formData.autoSave ? 'translate-x-6' : ''
+                  }`}
+                />
+              </button>
+            </div>
+            <p className="text-xs text-gray-600">
+              Automatically deposit gold on a schedule via GRAIL
+            </p>
+          </div>
+
+          {formData.autoSave && (
+            <div className="space-y-4 pl-4 border-l-2 border-amber-300">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Frequency
+                </label>
+                <select
+                  value={formData.frequency}
+                  onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="biweekly">Bi-weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Amount per deposit (grams)
+                </label>
+                <input
+                  type="number"
+                  step="0.001"
+                  placeholder="e.g., 0.5"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Visibility */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Visibility
+            </label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-3 p-3 border border-amber-200 rounded-lg cursor-pointer hover:bg-amber-50 transition">
+                <input
+                  type="radio"
+                  name="visibility"
+                  defaultChecked
+                  className="w-4 h-4 text-amber-600"
+                />
+                <div>
+                  <div className="font-medium text-gray-800">🌍 Public</div>
+                  <div className="text-xs text-gray-600">Anyone can see and support your goal</div>
+                </div>
+              </label>
+              <label className="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                <input
+                  type="radio"
+                  name="visibility"
+                  className="w-4 h-4 text-amber-600"
+                />
+                <div>
+                  <div className="font-medium text-gray-800">🔒 Private</div>
+                  <div className="text-xs text-gray-600">Only you can see this goal</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {/* Submit */}
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-[1.02]"
+            >
+              Create Goal
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
