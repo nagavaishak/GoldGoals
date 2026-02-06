@@ -207,7 +207,7 @@ await grail.transfer({
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/goldgoals.git
+git clone hhttps://github.com/nagavaishak/GoldGoals
 
 # Navigate to directory
 cd goldgoals
