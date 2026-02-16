@@ -1,76 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GoalCard from '@/components/GoalCard';
 import CreateGoalModal from '@/components/CreateGoalModal';
-
-const MOCK_GOALS = [
-  {
-    id: 1,
-    title: "Save for Japan trip 🇯🇵",
-    creator: "Alice",
-    target: 10,
-    current: 6.5,
-    deadline: "2026-08-15",
-    supporters: 8,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice"
-  },
-  {
-    id: 2,
-    title: "Emergency fund safety net",
-    creator: "Bob",
-    target: 5,
-    current: 2.3,
-    deadline: "2026-06-01",
-    supporters: 3,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bob"
-  },
-  {
-    id: 3,
-    title: "Dream wedding 💍",
-    creator: "Charlie",
-    target: 20,
-    current: 14.8,
-    deadline: "2026-12-20",
-    supporters: 15,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie"
-  },
-  {
-    id: 4,
-    title: "Starting my business",
-    creator: "Diana",
-    target: 15,
-    current: 4.2,
-    deadline: "2026-10-01",
-    supporters: 6,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Diana"
-  },
-  {
-    id: 5,
-    title: "House down payment 🏡",
-    creator: "Eve",
-    target: 50,
-    current: 18.5,
-    deadline: "2027-03-15",
-    supporters: 12,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Eve"
-  },
-  {
-    id: 6,
-    title: "Master's degree fund",
-    creator: "Frank",
-    target: 8,
-    current: 8,
-    deadline: "2026-04-01",
-    supporters: 9,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Frank",
-    completed: true
-  },
-];
+import { Goal } from '@/types/goal';
 
 export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [goals, setGoals] = useState(MOCK_GOALS);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch goals on mount
+  useEffect(() => {
+    fetchGoals();
+  }, []);
+
+  const fetchGoals = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/goals');
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error?.message || 'Failed to fetch goals');
+      }
+
+      setGoals(result.data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoalCreated = (newGoal: Goal) => {
+    setGoals([newGoal, ...goals]);
+  };
+
+  const handleGiftSent = (goalId: number, amount: number) => {
+    setGoals(goals.map(goal =>
+      goal.id === goalId
+        ? {
+            ...goal,
+            current: goal.current + amount,
+            completed: goal.current + amount >= goal.target
+          }
+        : goal
+    ));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-yellow-50">
@@ -164,12 +142,35 @@ export default function Home() {
               </button>
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {goals.map((goal) => (
-              <GoalCard key={goal.id} goal={goal} />
-            ))}
-          </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+              <p className="text-red-700">{error}</p>
+              <button
+                onClick={fetchGoals}
+                className="mt-4 px-6 py-2 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+
+          {/* Goals Grid */}
+          {!loading && !error && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {goals.map((goal) => (
+                <GoalCard key={goal.id} goal={goal} onGiftSent={handleGiftSent} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* How It Works */}
@@ -220,7 +221,10 @@ export default function Home() {
 
       {/* Create Goal Modal */}
       {showCreateModal && (
-        <CreateGoalModal onClose={() => setShowCreateModal(false)} />
+        <CreateGoalModal
+          onClose={() => setShowCreateModal(false)}
+          onGoalCreated={handleGoalCreated}
+        />
       )}
     </div>
   );

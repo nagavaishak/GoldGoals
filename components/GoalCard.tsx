@@ -1,20 +1,61 @@
 'use client';
 
-interface Goal {
-  id: number;
-  title: string;
-  creator: string;
-  target: number;
-  current: number;
-  deadline: string;
-  supporters: number;
-  avatar: string;
-  completed?: boolean;
+import { useState } from 'react';
+import { Goal } from '@/types/goal';
+
+interface GoalCardProps {
+  goal: Goal;
+  onGiftSent?: (goalId: number, amount: number) => void;
 }
 
-export default function GoalCard({ goal }: { goal: Goal }) {
+export default function GoalCard({ goal, onGiftSent }: GoalCardProps) {
+  const [showGiftModal, setShowGiftModal] = useState(false);
+  const [giftAmount, setGiftAmount] = useState('');
+  const [giftMessage, setGiftMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const progress = (goal.current / goal.target) * 100;
   const daysLeft = Math.ceil((new Date(goal.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+
+  const handleGiftGold = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/gift', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fromUserId: 'demo_user', // In production, get from auth
+          goalId: goal.id,
+          amount: parseFloat(giftAmount),
+          message: giftMessage
+        })
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error?.message || 'Failed to send gift');
+      }
+
+      // Notify parent component
+      if (onGiftSent) {
+        onGiftSent(goal.id, parseFloat(giftAmount));
+      }
+
+      // Reset and close modal
+      setGiftAmount('');
+      setGiftMessage('');
+      setShowGiftModal(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={`bg-white rounded-xl shadow-sm border transition-all hover:shadow-md ${
@@ -86,7 +127,10 @@ export default function GoalCard({ goal }: { goal: Goal }) {
 
         {/* Actions */}
         <div className="mt-4 flex gap-2">
-          <button className="flex-1 bg-gradient-to-r from-yellow-500 to-amber-600 text-white py-2 rounded-lg font-medium hover:shadow-md transition-all hover:scale-[1.02]">
+          <button
+            onClick={() => setShowGiftModal(true)}
+            className="flex-1 bg-gradient-to-r from-yellow-500 to-amber-600 text-white py-2 rounded-lg font-medium hover:shadow-md transition-all hover:scale-[1.02]"
+          >
             🎁 Gift Gold
           </button>
           <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
@@ -94,6 +138,89 @@ export default function GoalCard({ goal }: { goal: Goal }) {
           </button>
         </div>
       </div>
+
+      {/* Gift Modal */}
+      {showGiftModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-800">Gift Gold</h3>
+              <button
+                onClick={() => setShowGiftModal(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                Send gold to <span className="font-semibold text-amber-600">{goal.creator}</span>'s goal
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {goal.current}g / {goal.target}g ({progress.toFixed(0)}% complete)
+              </p>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleGiftGold} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Amount (grams of gold)
+                </label>
+                <input
+                  type="number"
+                  step="0.001"
+                  placeholder="e.g., 0.5"
+                  value={giftAmount}
+                  onChange={(e) => setGiftAmount(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  required
+                  min="0.001"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  ~${(parseFloat(giftAmount || '0') * 65).toFixed(2)} USD
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Message (optional)
+                </label>
+                <textarea
+                  placeholder="Add a supportive message..."
+                  value={giftMessage}
+                  onChange={(e) => setGiftMessage(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowGiftModal(false)}
+                  className="flex-1 px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Sending...' : 'Send Gift'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

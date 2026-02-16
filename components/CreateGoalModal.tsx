@@ -1,22 +1,66 @@
 'use client';
 
 import { useState } from 'react';
+import { CreateGoalRequest } from '@/types/goal';
 
-export default function CreateGoalModal({ onClose }: { onClose: () => void }) {
+interface CreateGoalModalProps {
+  onClose: () => void;
+  onGoalCreated?: (goal: any) => void;
+}
+
+export default function CreateGoalModal({ onClose, onGoalCreated }: CreateGoalModalProps) {
   const [formData, setFormData] = useState({
     title: '',
     target: '',
     deadline: '',
     autoSave: false,
-    frequency: 'weekly',
-    amount: ''
+    frequency: 'weekly' as 'daily' | 'weekly' | 'biweekly' | 'monthly',
+    amount: '',
+    visibility: 'public' as 'public' | 'private'
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In real app, this would call GRAIL API
-    alert('Goal created! (Demo only - GRAIL integration coming)');
-    onClose();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const payload: CreateGoalRequest = {
+        title: formData.title,
+        userId: formData.title.toLowerCase().replace(/[^a-z0-9]/g, '_'), // Generate userId from title
+        target: parseFloat(formData.target),
+        deadline: formData.deadline,
+        autoSave: formData.autoSave,
+        frequency: formData.autoSave ? formData.frequency : undefined,
+        amount: formData.autoSave ? parseFloat(formData.amount) : undefined,
+        visibility: formData.visibility
+      };
+
+      const response = await fetch('/api/goals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error?.message || 'Failed to create goal');
+      }
+
+      // Notify parent component
+      if (onGoalCreated) {
+        onGoalCreated(result.data);
+      }
+
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,6 +79,13 @@ export default function CreateGoalModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+
           {/* Title */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -185,9 +236,10 @@ export default function CreateGoalModal({ onClose }: { onClose: () => void }) {
             </button>
             <button
               type="submit"
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-[1.02]"
+              disabled={loading}
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Goal
+              {loading ? 'Creating...' : 'Create Goal'}
             </button>
           </div>
         </form>
