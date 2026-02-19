@@ -6,9 +6,10 @@ import { Goal } from '@/types/goal';
 interface GoalCardProps {
   goal: Goal;
   onGiftSent?: (goalId: number, amount: number) => void;
+  goldPricePerGram?: number;
 }
 
-export default function GoalCard({ goal, onGiftSent }: GoalCardProps) {
+export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: GoalCardProps) {
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [giftAmount, setGiftAmount] = useState('');
   const [giftMessage, setGiftMessage] = useState('');
@@ -184,7 +185,7 @@ export default function GoalCard({ goal, onGiftSent }: GoalCardProps) {
                   min="0.001"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  ~${(parseFloat(giftAmount || '0') * 65).toFixed(2)} USD
+                  ~${(parseFloat(giftAmount || '0') * goldPricePerGram).toFixed(2)} USD
                 </p>
               </div>
 

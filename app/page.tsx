@@ -10,10 +10,24 @@ export default function Home() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [goldPricePerGram, setGoldPricePerGram] = useState(65);
 
-  // Fetch goals on mount
+  const fetchGoldPrice = async () => {
+    try {
+      const res = await fetch('/api/price');
+      const result = await res.json();
+      if (result.success && result.data?.pricePerGram) {
+        setGoldPricePerGram(result.data.pricePerGram);
+      }
+    } catch {
+      // keep default fallback
+    }
+  };
+
+  // Fetch goals and price on mount
   useEffect(() => {
     fetchGoals();
+    fetchGoldPrice();
   }, []);
 
   const fetchGoals = async () => {
@@ -167,7 +181,7 @@ export default function Home() {
           {!loading && !error && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {goals.map((goal) => (
-                <GoalCard key={goal.id} goal={goal} onGiftSent={handleGiftSent} />
+                <GoalCard key={goal.id} goal={goal} onGiftSent={handleGiftSent} goldPricePerGram={goldPricePerGram} />
               ))}
             </div>
           )}
@@ -224,6 +238,7 @@ export default function Home() {
         <CreateGoalModal
           onClose={() => setShowCreateModal(false)}
           onGoalCreated={handleGoalCreated}
+          goldPricePerGram={goldPricePerGram}
         />
       )}
     </div>

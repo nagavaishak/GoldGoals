@@ -6,9 +6,10 @@ import { CreateGoalRequest } from '@/types/goal';
 interface CreateGoalModalProps {
   onClose: () => void;
   onGoalCreated?: (goal: any) => void;
+  goldPricePerGram?: number;
 }
 
-export default function CreateGoalModal({ onClose, onGoalCreated }: CreateGoalModalProps) {
+export default function CreateGoalModal({ onClose, onGoalCreated, goldPricePerGram = 65 }: CreateGoalModalProps) {
   const [formData, setFormData] = useState({
     title: '',
     target: '',
@@ -116,7 +117,7 @@ export default function CreateGoalModal({ onClose, onGoalCreated }: CreateGoalMo
               required
             />
             <p className="text-xs text-gray-500 mt-1">
-              ~${(parseFloat(formData.target) * 65 || 0).toFixed(2)} USD at current gold prices
+              ~${(parseFloat(formData.target) * goldPricePerGram || 0).toFixed(2)} USD at current gold prices
             </p>
           </div>
 
@@ -167,7 +168,7 @@ export default function CreateGoalModal({ onClose, onGoalCreated }: CreateGoalMo
                 </label>
                 <select
                   value={formData.frequency}
-                  onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, frequency: e.target.value as 'daily' | 'weekly' | 'biweekly' | 'monthly' })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 >
                   <option value="daily">Daily</option>
