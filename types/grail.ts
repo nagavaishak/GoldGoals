@@ -95,3 +95,85 @@ export interface GrailRecurringRequest {
   amountGrams: number;
   frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly';
 }
+
+// ─── Real GRAIL API shapes ────────────────────────────────────────────────────
+
+/** Response from GET /api/users/{userId} */
+export interface GrailUserResponse {
+  userId: string;
+  solanaAddress: string;
+  balanceGrams: number;
+  createdAt: string;
+}
+
+/** Response from GET /api/trading/gold/price */
+export interface GrailGoldPriceResponse {
+  pricePerGram: number;
+  currency: string;
+  timestamp: string;
+}
+
+/** Request body for POST /api/trading/purchases/user (estimate or purchase) */
+export interface GrailPurchaseUserRequest {
+  userId: string;
+  amountGrams: number;
+}
+
+/** Response from purchase estimate endpoint */
+export interface GrailBuyEstimateResponse {
+  estimatedUsd: number;
+  pricePerGram: number;
+  fee: number;
+}
+
+/** Response from POST /api/trading/purchases/user */
+export interface GrailPurchaseResponse {
+  purchaseId: string;
+  serializedTransaction: string; // base64-encoded unsigned Solana transaction
+  estimatedUsd: number;
+}
+
+/** Request body for POST /api/transactions/submit */
+export interface GrailSubmitRequest {
+  purchaseId: string;
+  signedTransaction: string; // base64-encoded signed Solana transaction
+}
+
+/** Response from POST /api/transactions/submit */
+export interface GrailSubmitResponse {
+  signature: string;
+  status: 'pending' | 'confirmed' | 'failed';
+}
+
+/** Request body for POST /api/users */
+export interface GrailCreateUserRequest {
+  userId: string;
+  kycHash: string;
+}
+
+// ─── Custom error classes ─────────────────────────────────────────────────────
+
+export class GrailApiError extends Error {
+  constructor(
+    public readonly statusCode: number,
+    public readonly code: string,
+    message: string
+  ) {
+    super(message);
+    this.name = 'GrailApiError';
+  }
+}
+
+export class GrailInsufficientFundsError extends GrailApiError {
+  constructor(message = 'Insufficient funds in partner wallet') {
+    super(402, 'INSUFFICIENT_FUNDS', message);
+    this.name = 'GrailInsufficientFundsError';
+  }
+}
+
+export class GrailUserExistsError extends GrailApiError {
+  constructor(userId: string) {
+    super(409, 'USER_EXISTS', `User already exists: ${userId}`);
+    this.name = 'GrailUserExistsError';
+  }
+}
