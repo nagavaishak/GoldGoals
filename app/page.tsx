@@ -382,7 +382,7 @@ function ManifestoSection() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6 }}
-          className="hidden md:flex flex-col gap-[2.8rem] pt-2 font-mono text-white/15 text-xs select-none"
+          className="hidden md:flex flex-col gap-[2.8rem] pt-2 font-mono text-white/30 text-xs select-none"
         >
           <span>01</span>
           <span>02</span>
@@ -458,7 +458,7 @@ function FeatureCard({
       style={{ rotateX: rotX, rotateY: rotY, transformStyle: 'preserve-3d' }}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="group relative bg-[#0e0e0e] border border-white/[0.07] p-8 md:p-10 hover:border-[#C9A84C]/35 transition-all duration-500 cursor-default overflow-hidden"
+      className="group relative bg-[#0e0e0e] border border-white/[0.12] p-8 md:p-10 hover:border-[#C9A84C]/45 transition-all duration-500 cursor-default overflow-hidden"
     >
       {/* Hover glow */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
@@ -469,7 +469,7 @@ function FeatureCard({
         <h3 className="text-4xl md:text-5xl text-white mt-7 mb-5 leading-none font-bebas">
           {title}
         </h3>
-        <p className="text-white/35 text-sm leading-relaxed font-syne">
+        <p className="text-white/60 text-sm leading-relaxed font-syne">
           {body}
         </p>
       </div>
@@ -491,13 +491,13 @@ function FeaturesSection() {
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ duration: 0.5 }}
-        className="text-white/20 text-[10px] tracking-[0.45em] mb-10 font-mono"
+        className="text-white/50 text-[10px] tracking-[0.45em] mb-10 font-mono"
       >
         HOW IT WORKS
       </motion.p>
 
       {/* 2×2 grid separated by 1px lines */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/[0.05]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/[0.09]">
         {FEATURES.map((f, i) => (
           <FeatureCard key={f.num} {...f} index={i} />
         ))}
@@ -551,7 +551,7 @@ function GoalsShowcase({
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 0.3 }}
-          className="text-white/15 text-[10px] tracking-[0.25em] pb-2 font-mono"
+          className="text-white/40 text-[10px] tracking-[0.25em] pb-2 font-mono"
         >
           {goals.length} GOALS
         </motion.span>
@@ -570,7 +570,7 @@ function GoalsShowcase({
       {/* Error state */}
       {error && !loading && (
         <div className="px-6 md:px-16 text-center py-16">
-          <p className="text-white/25 text-sm mb-5 font-mono">{error}</p>
+          <p className="text-white/50 text-sm mb-5 font-mono">{error}</p>
           <button
             onClick={onRetry}
             className="text-[#C9A84C] text-[10px] tracking-[0.25em] font-mono border-b border-[#C9A84C]/30 pb-0.5 hover:border-[#C9A84C] transition-colors"
@@ -662,17 +662,17 @@ function CTASection({ onCreateGoal }: { onCreateGoal: () => void }) {
 /* ── Footer ────────────────────────────────────────────────────── */
 function Footer() {
   return (
-    <footer className="px-6 md:px-16 py-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
-      <span className="text-white/15 text-[10px] tracking-[0.25em] font-mono">
+    <footer className="px-6 md:px-16 py-8 border-t border-white/[0.12] flex flex-col sm:flex-row items-center justify-between gap-4">
+      <span className="text-white/35 text-[10px] tracking-[0.25em] font-mono">
         GOLDGOALS © 2026
       </span>
-      <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-white/15 text-[10px] font-mono tracking-[0.15em]">
+      <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-white/35 text-[10px] font-mono tracking-[0.15em]">
         <span>BACKED BY REAL GOLD</span>
-        <span className="text-white/10">·</span>
+        <span className="text-white/20">·</span>
         <span>YOU OWN YOUR ASSETS</span>
-        <span className="text-white/10">·</span>
+        <span className="text-white/20">·</span>
         <span>BUILT ON SOLANA</span>
-        <span className="text-white/10">·</span>
+        <span className="text-white/20">·</span>
         <span>POWERED BY ORO GRAIL API</span>
       </div>
     </footer>

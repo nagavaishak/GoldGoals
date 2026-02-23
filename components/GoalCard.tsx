@@ -69,14 +69,14 @@ function StateTracker({ current }: { current: GoalState }) {
               <motion.div
                 animate={{
                   backgroundColor: isActive ? '#C9A84C' : isPast ? 'rgba(201,168,76,0.35)' : 'transparent',
-                  borderColor:     isActive ? '#C9A84C' : isPast ? 'rgba(201,168,76,0.3)'  : 'rgba(255,255,255,0.09)',
+                  borderColor:     isActive ? '#C9A84C' : isPast ? 'rgba(201,168,76,0.4)'  : 'rgba(255,255,255,0.15)',
                   scale: isActive ? 1.35 : 1,
                 }}
                 transition={{ duration: 0.55, ease }}
                 className={`w-1.5 h-1.5 rounded-full border ${isActive ? 'state-dot-active' : ''}`}
               />
               <span className={`text-[6.5px] tracking-[0.18em] font-mono transition-colors duration-500 ${
-                isActive ? 'text-[#C9A84C]' : isPast ? 'text-white/20' : 'text-white/[0.07]'
+                isActive ? 'text-[#C9A84C]' : isPast ? 'text-white/35' : 'text-white/[0.18]'
               }`}>
                 {s}
               </span>
@@ -335,12 +335,12 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
   const borderClass = momentum
     ? 'border-[#C9A84C]/60'
     : isCritical
-    ? 'border-red-500/25'
+    ? 'border-red-500/40'
     : isUrgent
-    ? 'border-amber-500/20'
+    ? 'border-amber-500/35'
     : live.completed
-    ? 'border-emerald-500/20'
-    : 'border-white/[0.07]';
+    ? 'border-emerald-500/35'
+    : 'border-white/[0.12]';
 
   return (
     <>
@@ -357,7 +357,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
             : undefined,
           transition: 'box-shadow 0.4s ease',
         }}
-        className={`relative bg-[#111111] border transition-colors duration-500 flex flex-col overflow-hidden ${borderClass}`}
+        className={`relative bg-[#111111] border transition-colors duration-500 flex flex-col overflow-hidden ${borderClass} hover:border-white/[0.20]`}
       >
         {/* Momentum background glow */}
         <AnimatePresence>
@@ -403,7 +403,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
                 alt={live.creator}
                 className="w-5 h-5 rounded-full grayscale opacity-50"
               />
-              <span className="text-white/25 text-[9px] tracking-[0.2em] uppercase font-mono">
+              <span className="text-white/50 text-[9px] tracking-[0.2em] uppercase font-mono">
                 {live.creator}
               </span>
             </div>
@@ -414,7 +414,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
                 isCritical ? 'text-red-400 deadline-critical'
                 : isUrgent  ? 'text-amber-400/80'
                 : live.completed ? 'text-emerald-400/60'
-                : 'text-white/18'
+                : 'text-white/40'
               }`}
             >
               {live.completed ? 'COMPLETE' : daysLeft > 0 ? `${daysLeft}D` : 'DUE'}
@@ -435,7 +435,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
               </span>
               <span className="text-[#C9A84C]/45 text-xs font-mono">g</span>
             </div>
-            <span className="text-white/18 text-xs font-mono">/ {live.target}g</span>
+            <span className="text-white/40 text-xs font-mono">/ {live.target}g</span>
           </div>
 
           {/* ── Gamified progress bar ──────────────────────────── */}
@@ -455,7 +455,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
             ].map(({ v, l }) => (
               <div key={l}>
                 <div className="text-white/65 text-[1.05rem] font-bebas leading-none">{v}</div>
-                <div className="text-white/15 text-[7px] tracking-[0.2em] mt-0.5 font-mono">{l}</div>
+                <div className="text-white/40 text-[7px] tracking-[0.2em] mt-0.5 font-mono">{l}</div>
               </div>
             ))}
           </div>
@@ -467,10 +467,10 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
               initial={{ opacity: 0 }}
               animate={{ opacity: inView ? 1 : 0 }}
               transition={{ delay: 1, duration: 0.5 }}
-              className="flex items-center gap-2 mb-3.5 py-2 px-2.5 bg-white/[0.025] border border-white/[0.05]"
+              className="flex items-center gap-2 mb-3.5 py-2 px-2.5 bg-white/[0.04] border border-white/[0.12]"
             >
               <div className="w-1 h-1 rounded-full bg-[#C9A84C]/40 flex-none" />
-              <span className="text-white/22 text-[8.5px] tracking-[0.1em] font-mono">
+              <span className="text-white/50 text-[8.5px] tracking-[0.1em] font-mono">
                 {nextUnlockGrams}g to{' '}
                 <span className="text-[#C9A84C]/55">{nextM.label}</span>
               </span>
@@ -513,7 +513,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
               onClick={() => setShowGiftModal(true)}
               whileTap={{ scale: 0.96 }}
               whileHover={{ borderColor: 'rgba(201,168,76,0.45)' }}
-              className="btn-shimmer w-full py-2.5 mt-auto border border-white/[0.09] text-[#C9A84C] text-[10px] tracking-[0.3em] font-bebas transition-all duration-300 flex items-center justify-center gap-2"
+              className="btn-shimmer w-full py-2.5 mt-auto border border-white/[0.18] text-[#C9A84C] text-[10px] tracking-[0.3em] font-bebas transition-all duration-300 flex items-center justify-center gap-2"
             >
               <span>GIFT GOLD</span>
               {/* Arrow bobs right — micro-cue that action is available */}
@@ -555,7 +555,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
               animate={{ opacity: 1, y: 0,  scale: 1    }}
               exit={{    opacity: 0, y: 30, scale: 0.97 }}
               transition={{ duration: 0.4, ease }}
-              className="bg-[#0d0d0d] border border-white/[0.09] max-w-md w-full p-8"
+              className="bg-[#0d0d0d] border border-white/[0.16] max-w-md w-full p-8"
               onClick={e => e.stopPropagation()}
             >
               {/* Header */}
@@ -567,13 +567,13 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
                   <h3 className="text-[1.85rem] text-white font-bebas leading-tight">
                     {live.title}
                   </h3>
-                  <p className="text-white/22 text-[9px] mt-1.5 font-mono tracking-[0.08em]">
+                  <p className="text-white/50 text-[9px] mt-1.5 font-mono tracking-[0.08em]">
                     {live.current}g / {live.target}g — {progress.toFixed(0)}% complete
                   </p>
                 </div>
                 <button
                   onClick={() => setShowGiftModal(false)}
-                  className="text-white/20 hover:text-white/50 transition-colors text-2xl leading-none mt-0.5"
+                  className="text-white/45 hover:text-white/80 transition-colors text-2xl leading-none mt-0.5"
                 >
                   ×
                 </button>
@@ -588,7 +588,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
               <form onSubmit={handleGiftGold} className="space-y-7">
                 {/* Amount */}
                 <div className="border-b border-white/10 pb-1 focus-within:border-[#C9A84C]/40 transition-colors duration-300">
-                  <label className="block text-[9px] text-white/22 tracking-[0.35em] mb-3 font-mono">
+                  <label className="block text-[9px] text-white/50 tracking-[0.35em] mb-3 font-mono">
                     AMOUNT (GRAMS)
                   </label>
                   <input
@@ -597,12 +597,12 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
                     placeholder="0.5"
                     value={giftAmount}
                     onChange={e => setGiftAmount(e.target.value)}
-                    className="w-full bg-transparent text-white text-[2.2rem] font-bebas outline-none placeholder:text-white/10 leading-none"
+                    className="w-full bg-transparent text-white text-[2.2rem] font-bebas outline-none placeholder:text-white/20 leading-none"
                     required
                     min="0.001"
                   />
                   {giftAmount && parseFloat(giftAmount) > 0 && (
-                    <p className="text-white/18 text-[9px] mt-2 font-mono">
+                    <p className="text-white/45 text-[9px] mt-2 font-mono">
                       ≈ ${(parseFloat(giftAmount) * goldPricePerGram).toFixed(2)} USD
                     </p>
                   )}
@@ -610,7 +610,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
 
                 {/* Message */}
                 <div className="border-b border-white/10 pb-1 focus-within:border-[#C9A84C]/40 transition-colors duration-300">
-                  <label className="block text-[9px] text-white/22 tracking-[0.35em] mb-3 font-mono">
+                  <label className="block text-[9px] text-white/50 tracking-[0.35em] mb-3 font-mono">
                     MESSAGE (OPTIONAL)
                   </label>
                   <textarea
@@ -624,8 +624,8 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
 
                 {/* Preview of impact */}
                 {giftAmount && parseFloat(giftAmount) > 0 && (
-                  <div className="py-2.5 px-3 bg-white/[0.025] border border-white/[0.05]">
-                    <p className="text-white/22 text-[8.5px] font-mono tracking-[0.1em]">
+                  <div className="py-2.5 px-3 bg-white/[0.04] border border-white/[0.14]">
+                    <p className="text-white/55 text-[8.5px] font-mono tracking-[0.1em]">
                       After this gift:{' '}
                       <span className="text-[#C9A84C]/70">
                         {(live.current + parseFloat(giftAmount)).toFixed(2)}g /{' '}
@@ -640,7 +640,7 @@ export default function GoalCard({ goal, onGiftSent, goldPricePerGram = 65 }: Go
                   <button
                     type="button"
                     onClick={() => setShowGiftModal(false)}
-                    className="flex-1 py-3.5 border border-white/[0.09] text-white/28 text-[10px] tracking-[0.2em] font-bebas hover:border-white/18 transition-colors"
+                    className="flex-1 py-3.5 border border-white/[0.18] text-white/55 text-[10px] tracking-[0.2em] font-bebas hover:border-white/35 transition-colors"
                   >
                     CANCEL
                   </button>
