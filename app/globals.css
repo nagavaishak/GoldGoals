@@ -152,3 +152,13 @@ input[type="date"]::-webkit-inner-spin-button {
    Communicates: "this is where you are — it's alive." */
 @keyframes stateDotBreath { 0%,100%{box-shadow:0 0 6px rgba(201,168,76,0.5)} 50%{box-shadow:0 0 18px rgba(201,168,76,0.8), 0 0 30px rgba(201,168,76,0.25)} }
 .state-dot-active { animation: stateDotBreath 2.2s ease-in-out infinite; }
+
+/* ── Floating 3D objects (hero background) ───────────────────── */
+@keyframes floatA { 0%,100%{ transform:translateY(0px); } 50%{ transform:translateY(-22px); } }
+@keyframes floatB { 0%,100%{ transform:translateY(0px); } 50%{ transform:translateY(-16px); } }
+@keyframes floatC { 0%,100%{ transform:translateY(0px); } 50%{ transform:translateY(-28px); } }
+@keyframes floatD { 0%,100%{ transform:translateY(0px); } 50%{ transform:translateY(-14px); } }
+.float-a { animation: floatA 4.5s ease-in-out infinite; }
+.float-b { animation: floatB 5.8s ease-in-out infinite; }
+.float-c { animation: floatC 3.9s ease-in-out infinite; }
+.float-d { animation: floatD 6.4s ease-in-out infinite; }

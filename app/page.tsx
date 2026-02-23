@@ -19,6 +19,128 @@ function GrainOverlay() {
   return <div className="grain-overlay" aria-hidden="true" />;
 }
 
+/* ── 3D Gold Bar (isometric SVG) ───────────────────────────────── */
+function GoldBarSVG({ uid }: { uid: string }) {
+  return (
+    <svg viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id={`bt-${uid}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFF8C0" />
+          <stop offset="45%" stopColor="#F0CC50" />
+          <stop offset="100%" stopColor="#C9A84C" />
+        </linearGradient>
+        <linearGradient id={`bl-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#C9A84C" />
+          <stop offset="100%" stopColor="#7A5414" />
+        </linearGradient>
+        <linearGradient id={`br-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#9B7228" />
+          <stop offset="100%" stopColor="#4A2E06" />
+        </linearGradient>
+      </defs>
+      {/* Ground shadow */}
+      <ellipse cx="100" cy="145" rx="82" ry="7" fill="rgba(0,0,0,0.4)" />
+      {/* Top face */}
+      <polygon points="100,12 182,52 100,90 18,50" fill={`url(#bt-${uid})`} />
+      {/* Left face */}
+      <polygon points="18,50 100,90 100,132 18,92" fill={`url(#bl-${uid})`} />
+      {/* Right face */}
+      <polygon points="100,90 182,52 182,94 100,132" fill={`url(#br-${uid})`} />
+      {/* Raised platform on top */}
+      <polygon points="100,24 164,56 100,76 36,46" fill="#F5D76E" opacity="0.35" />
+      {/* Top edge specular */}
+      <polyline points="18,50 100,12 182,52" stroke="#FFFBD5" strokeWidth="1.5" fill="none" opacity="0.75" strokeLinejoin="round" />
+      <line x1="100" y1="12" x2="100" y2="90" stroke="#FFFBD5" strokeWidth="0.8" opacity="0.35" />
+      {/* Engraved lines on top face */}
+      <line x1="52" y1="44" x2="148" y2="68" stroke="#B8922A" strokeWidth="0.8" opacity="0.55" />
+      <line x1="52" y1="51" x2="148" y2="75" stroke="#B8922A" strokeWidth="0.8" opacity="0.55" />
+      {/* Brand on front face */}
+      <line x1="28" y1="104" x2="90" y2="116" stroke="#F5D76E" strokeWidth="0.7" opacity="0.35" />
+      <line x1="28" y1="110" x2="85" y2="121" stroke="#F5D76E" strokeWidth="0.7" opacity="0.35" />
+    </svg>
+  );
+}
+
+/* ── 3D Gold Coin (SVG) ────────────────────────────────────────── */
+function GoldCoinSVG({ uid }: { uid: string }) {
+  return (
+    <svg viewBox="0 0 110 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id={`cf-${uid}`} cx="36%" cy="32%" r="65%">
+          <stop offset="0%" stopColor="#FFFAD8" />
+          <stop offset="25%" stopColor="#F5D76E" />
+          <stop offset="70%" stopColor="#C9A84C" />
+          <stop offset="100%" stopColor="#7A5414" />
+        </radialGradient>
+        <linearGradient id={`cs-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#A07830" />
+          <stop offset="100%" stopColor="#4A2E06" />
+        </linearGradient>
+      </defs>
+      {/* Ground shadow */}
+      <ellipse cx="55" cy="123" rx="42" ry="6" fill="rgba(0,0,0,0.35)" />
+      {/* Coin side (thickness) */}
+      <path d="M13,62 A42,42 0 1,0 97,62 L97,75 A42,13 0 0,1 13,75 Z" fill={`url(#cs-${uid})`} />
+      {/* Coin face */}
+      <circle cx="55" cy="55" r="42" fill={`url(#cf-${uid})`} />
+      {/* Concentric detail rings */}
+      <circle cx="55" cy="55" r="36" fill="none" stroke="#C9A84C" strokeWidth="0.8" opacity="0.45" />
+      <circle cx="55" cy="55" r="28" fill="none" stroke="#C9A84C" strokeWidth="0.6" opacity="0.3" />
+      {/* Center G */}
+      <text x="55" y="68" textAnchor="middle" fill="#7A5414" fontSize="30"
+        fontFamily="Georgia, serif" fontWeight="bold" opacity="0.7">G</text>
+      {/* Specular highlight arc */}
+      <path d="M23,32 A42,42 0 0,1 87,32" stroke="#FFFBD5" strokeWidth="2.5"
+        fill="none" opacity="0.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/* ── Floating 3D Objects (hero background) ─────────────────────── */
+function FloatingObjects() {
+  const glow = {
+    filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.8)) drop-shadow(0 0 35px rgba(201,168,76,0.18))',
+  };
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      {/* Large bar — top right, partially off-screen */}
+      <div className="absolute" style={{ top: '-40px', right: '-70px', width: '300px', transform: 'rotate(-18deg)' }}>
+        <div className="float-a" style={{ animationDelay: '0s', ...glow }}>
+          <GoldBarSVG uid="bar1" />
+        </div>
+      </div>
+
+      {/* Large coin — bottom left */}
+      <div className="absolute hidden sm:block" style={{ bottom: '70px', left: '-55px', width: '240px', transform: 'rotate(14deg)' }}>
+        <div className="float-b" style={{ animationDelay: '0.7s', ...glow }}>
+          <GoldCoinSVG uid="coin1" />
+        </div>
+      </div>
+
+      {/* Medium bar — center right */}
+      <div className="absolute hidden md:block" style={{ top: '37%', right: '18px', width: '200px', transform: 'rotate(30deg)' }}>
+        <div className="float-c" style={{ animationDelay: '1.4s', ...glow }}>
+          <GoldBarSVG uid="bar2" />
+        </div>
+      </div>
+
+      {/* Small coin — top left */}
+      <div className="absolute hidden lg:block" style={{ top: '110px', left: '-15px', width: '150px', transform: 'rotate(-7deg)' }}>
+        <div className="float-d" style={{ animationDelay: '2.1s', ...glow }}>
+          <GoldCoinSVG uid="coin2" />
+        </div>
+      </div>
+
+      {/* Small bar — bottom right */}
+      <div className="absolute hidden sm:block" style={{ bottom: '-25px', right: '155px', width: '175px', transform: 'rotate(-40deg)' }}>
+        <div className="float-b" style={{ animationDelay: '0.3s', ...glow }}>
+          <GoldBarSVG uid="bar3" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Nav ───────────────────────────────────────────────────────── */
 function Nav({ onCreateGoal }: { onCreateGoal: () => void }) {
   return (
@@ -73,6 +195,9 @@ function HeroSection({
       <div className="absolute inset-0 pointer-events-none">
         <div className="gold-blob" />
       </div>
+
+      {/* Floating 3D gold objects */}
+      <FloatingObjects />
 
       {/* Giant ghost number */}
       {!loading && (
