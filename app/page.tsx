@@ -162,7 +162,7 @@ function Nav({ onCreateGoal }: { onCreateGoal: () => void }) {
       initial={{ opacity: 0, y: -24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease }}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.06] backdrop-blur-xl bg-black/50"
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.10] backdrop-blur-xl bg-black/60"
     >
       <div className="flex items-center gap-3">
         <div className="w-7 h-7 bg-[#C9A84C] flex items-center justify-center">
@@ -218,6 +218,12 @@ function HeroSection({
       {/* Floating 3D gold objects */}
       <FloatingObjects />
 
+      {/* Left-side text scrim — keeps headline/tagline readable against warm gradient */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'linear-gradient(90deg, rgba(8,7,6,0.72) 0%, rgba(8,7,6,0.45) 38%, transparent 65%)' }}
+      />
+
       {/* Giant ghost number */}
       {!loading && (
         <div
@@ -263,7 +269,7 @@ function HeroSection({
           transition={{ duration: 0.7, delay: 0.45, ease }}
           className="flex flex-col sm:flex-row items-start sm:items-center gap-8"
         >
-          <p className="text-white/40 text-sm leading-relaxed max-w-[260px] font-syne">
+          <p className="text-white/70 text-sm leading-relaxed max-w-[260px] font-syne">
             Turn savings goals into gold-backed social commitments.
           </p>
           <div className="flex items-center gap-5">
@@ -275,7 +281,7 @@ function HeroSection({
             </button>
             <a
               href="#goals"
-              className="text-white/35 text-[11px] tracking-[0.12em] font-mono border-b border-white/15 pb-0.5 hover:text-white/70 hover:border-white/40 transition-colors duration-300"
+              className="text-white/55 text-[11px] tracking-[0.12em] font-mono border-b border-white/30 pb-0.5 hover:text-white/80 hover:border-white/55 transition-colors duration-300"
             >
               SEE GOALS ↓
             </a>
@@ -287,7 +293,7 @@ function HeroSection({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="flex gap-10 mt-16 pt-10 border-t border-white/[0.08]"
+          className="flex gap-10 mt-16 pt-10 border-t border-white/[0.18]"
         >
           {[
             { value: loading ? '—' : String(activeCount), label: 'ACTIVE GOALS' },
@@ -298,7 +304,7 @@ function HeroSection({
               <div className="text-3xl md:text-4xl text-[#C9A84C] font-bebas leading-none">
                 {value}
               </div>
-              <div className="text-white/25 text-[9px] tracking-[0.35em] mt-1.5 font-mono">
+              <div className="text-white/50 text-[9px] tracking-[0.35em] mt-1.5 font-mono">
                 {label}
               </div>
             </div>
@@ -313,8 +319,8 @@ function HeroSection({
         transition={{ delay: 1.4 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
       >
-        <span className="text-white/15 text-[9px] tracking-[0.4em] font-mono">SCROLL</span>
-        <div className="w-px h-14 bg-white/[0.07] overflow-hidden">
+        <span className="text-white/35 text-[9px] tracking-[0.4em] font-mono">SCROLL</span>
+        <div className="w-px h-14 bg-white/[0.18] overflow-hidden">
           <div className="scroll-line" />
         </div>
       </motion.div>
