@@ -114,3 +114,41 @@ input[type="date"]::-webkit-inner-spin-button {
   background: rgba(201,168,76,0.25);
   color: #f0ece0;
 }
+
+/* ── Gamified card animations ───────────────────────────────────── */
+
+/* Sweeps a light sheen across the progress fill during momentum.
+   Communicates: "energy is moving through this goal right now." */
+@keyframes progressShimmer {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+.animate-progress-shimmer {
+  animation: progressShimmer 1.1s ease-in-out infinite;
+}
+
+/* Cursor dot pulses faster as you approach a milestone.
+   Communicates: "you are close to something meaningful." */
+@keyframes cursorPulseSlow { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
+@keyframes cursorPulseFast { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.6)} }
+.cursor-pulse-slow { animation: cursorPulseSlow 2.2s ease-in-out infinite; }
+.cursor-pulse-fast { animation: cursorPulseFast 0.55s ease-in-out infinite; }
+
+/* Milestone marker flashes when newly unlocked.
+   Communicates: "you just crossed a threshold — that matters." */
+@keyframes milestoneFlash {
+  0%   { opacity: 0; transform: scaleY(0.4); }
+  40%  { opacity: 1; transform: scaleY(1.6); }
+  100% { opacity: 1; transform: scaleY(1); }
+}
+.milestone-flash { animation: milestoneFlash 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* Critical deadline: the deadline badge throbs red.
+   Communicates: "time pressure is real — act now." */
+@keyframes criticalPulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+.deadline-critical { animation: criticalPulse 0.75s ease-in-out infinite; }
+
+/* State dot: active node breathes gold.
+   Communicates: "this is where you are — it's alive." */
+@keyframes stateDotBreath { 0%,100%{box-shadow:0 0 6px rgba(201,168,76,0.5)} 50%{box-shadow:0 0 18px rgba(201,168,76,0.8), 0 0 30px rgba(201,168,76,0.25)} }
+.state-dot-active { animation: stateDotBreath 2.2s ease-in-out infinite; }
