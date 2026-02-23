@@ -99,42 +99,56 @@ function GoldCoinSVG({ uid }: { uid: string }) {
 /* ── Floating 3D Objects (hero background) ─────────────────────── */
 function FloatingObjects() {
   const glow = {
-    filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.8)) drop-shadow(0 0 35px rgba(201,168,76,0.18))',
+    filter: 'drop-shadow(0 40px 80px rgba(0,0,0,0.85)) drop-shadow(0 0 50px rgba(201,168,76,0.22))',
   };
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* Large bar — top right, partially off-screen */}
-      <div className="absolute" style={{ top: '-40px', right: '-70px', width: '300px', transform: 'rotate(-18deg)' }}>
+      {/* Dominant bar — top right anchor, massive */}
+      <div className="absolute" style={{ top: '-80px', right: '-120px', width: '520px', transform: 'rotate(-16deg)' }}>
         <div className="float-a" style={{ animationDelay: '0s', ...glow }}>
           <GoldBarSVG uid="bar1" />
         </div>
       </div>
 
-      {/* Large coin — bottom left */}
-      <div className="absolute hidden sm:block" style={{ bottom: '70px', left: '-55px', width: '240px', transform: 'rotate(14deg)' }}>
-        <div className="float-b" style={{ animationDelay: '0.7s', ...glow }}>
+      {/* Large coin — top left */}
+      <div className="absolute" style={{ top: '50px', left: '-90px', width: '380px', transform: 'rotate(-5deg)' }}>
+        <div className="float-d" style={{ animationDelay: '1.8s', ...glow }}>
           <GoldCoinSVG uid="coin1" />
         </div>
       </div>
 
-      {/* Medium bar — center right */}
-      <div className="absolute hidden md:block" style={{ top: '37%', right: '18px', width: '200px', transform: 'rotate(30deg)' }}>
-        <div className="float-c" style={{ animationDelay: '1.4s', ...glow }}>
+      {/* Large bar — center right, rotated dramatically */}
+      <div className="absolute hidden md:block" style={{ top: '32%', right: '-30px', width: '360px', transform: 'rotate(26deg)' }}>
+        <div className="float-c" style={{ animationDelay: '1.1s', ...glow }}>
           <GoldBarSVG uid="bar2" />
         </div>
       </div>
 
-      {/* Small coin — top left */}
-      <div className="absolute hidden lg:block" style={{ top: '110px', left: '-15px', width: '150px', transform: 'rotate(-7deg)' }}>
-        <div className="float-d" style={{ animationDelay: '2.1s', ...glow }}>
+      {/* Huge coin — bottom left, dominant */}
+      <div className="absolute hidden sm:block" style={{ bottom: '10px', left: '-100px', width: '430px', transform: 'rotate(10deg)' }}>
+        <div className="float-b" style={{ animationDelay: '0.5s', ...glow }}>
           <GoldCoinSVG uid="coin2" />
         </div>
       </div>
 
-      {/* Small bar — bottom right */}
-      <div className="absolute hidden sm:block" style={{ bottom: '-25px', right: '155px', width: '175px', transform: 'rotate(-40deg)' }}>
-        <div className="float-b" style={{ animationDelay: '0.3s', ...glow }}>
+      {/* Large bar — bottom right */}
+      <div className="absolute hidden sm:block" style={{ bottom: '-50px', right: '60px', width: '340px', transform: 'rotate(-44deg)' }}>
+        <div className="float-a" style={{ animationDelay: '2.5s', ...glow }}>
           <GoldBarSVG uid="bar3" />
+        </div>
+      </div>
+
+      {/* Medium coin — bottom center */}
+      <div className="absolute hidden md:block" style={{ bottom: '-20px', left: '42%', width: '280px', transform: 'rotate(6deg)' }}>
+        <div className="float-d" style={{ animationDelay: '3.2s', ...glow }}>
+          <GoldCoinSVG uid="coin3" />
+        </div>
+      </div>
+
+      {/* Medium bar — top center, between headline and top-right bar */}
+      <div className="absolute hidden lg:block" style={{ top: '-10px', left: '54%', width: '300px', transform: 'rotate(20deg)' }}>
+        <div className="float-c" style={{ animationDelay: '0.8s', ...glow }}>
+          <GoldBarSVG uid="bar4" />
         </div>
       </div>
     </div>
@@ -190,7 +204,12 @@ function HeroSection({
   ];
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-20">
+    <section
+      className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-20"
+      style={{
+        background: 'radial-gradient(ellipse 130% 90% at 30% 55%, #19140a 0%, #100d07 35%, #09080500 70%)',
+      }}
+    >
       {/* Animated gold blob */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="gold-blob" />
@@ -704,7 +723,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-[#0a0a0a] min-h-screen">
+    <div className="min-h-screen" style={{ background: '#080706' }}>
       <GrainOverlay />
       <Nav onCreateGoal={() => setShowCreateModal(true)} />
       <HeroSection
