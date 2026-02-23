@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { grailClient } from '@/lib/grail';
-import { goals } from '@/lib/goals-store';
+import { getGoals, createGoal } from '@/lib/goals-store';
 import { Goal, CreateGoalRequest } from '@/types/goal';
 
 /**
@@ -13,17 +13,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status'); // 'active' | 'completed'
     const userId = searchParams.get('userId');
 
-    let filteredGoals = [...goals];
-
-    if (status === 'completed') {
-      filteredGoals = filteredGoals.filter(g => g.completed);
-    } else if (status === 'active') {
-      filteredGoals = filteredGoals.filter(g => !g.completed);
-    }
-
-    if (userId) {
-      filteredGoals = filteredGoals.filter(g => g.userId === userId);
-    }
+    const filteredGoals = await getGoals({ status: status ?? undefined, userId: userId ?? undefined });
 
     return NextResponse.json({
       success: true,
@@ -82,8 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 3: Create goal
-    const newGoal: Goal = {
-      id: goals.length > 0 ? Math.max(...goals.map(g => g.id)) + 1 : 1,
+    const newGoal = await createGoal({
       title: body.title,
       creator: body.userId,
       userId: body.userId,
@@ -103,9 +92,7 @@ export async function POST(request: NextRequest) {
             recurringPaymentId,
           }
         : undefined,
-    };
-
-    goals.unshift(newGoal);
+    });
 
     return NextResponse.json({
       success: true,

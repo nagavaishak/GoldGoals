@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const goal = getGoalById(body.goalId);
+    const goal = await getGoalById(body.goalId);
     if (!goal) {
       return NextResponse.json(
         { success: false, error: { message: 'Goal not found' } },
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     const transaction = transferResponse.data;
 
-    const updatedGoal = updateGoalBalance(body.goalId, body.amount);
+    const updatedGoal = await updateGoalBalance(body.goalId, body.amount);
     if (!updatedGoal) {
       return NextResponse.json(
         { success: false, error: { message: 'Failed to update goal balance' } },

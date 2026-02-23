@@ -1,99 +1,110 @@
-// In-memory goal store shared between API routes
 import { Goal } from '@/types/goal';
+import { supabase } from '@/lib/supabase';
 
-export let goals: Goal[] = [
-  {
-    id: 1,
-    title: "Save for Japan trip 🇯🇵",
-    creator: "Alice",
-    userId: "alice",
-    target: 10,
-    current: 6.5,
-    deadline: "2026-08-15",
-    supporters: 8,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice",
-    createdAt: "2026-01-15T10:00:00.000Z",
-    visibility: "public",
-    grailAccountId: undefined,
-  },
-  {
-    id: 2,
-    title: "Emergency fund safety net",
-    creator: "Bob",
-    userId: "bob",
-    target: 5,
-    current: 2.3,
-    deadline: "2026-06-01",
-    supporters: 3,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bob",
-    createdAt: "2026-01-10T10:00:00.000Z",
-    visibility: "public",
-  },
-  {
-    id: 3,
-    title: "Dream wedding 💍",
-    creator: "Charlie",
-    userId: "charlie",
-    target: 20,
-    current: 14.8,
-    deadline: "2026-12-20",
-    supporters: 15,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie",
-    createdAt: "2026-01-05T10:00:00.000Z",
-    visibility: "public",
-  },
-  {
-    id: 4,
-    title: "Starting my business",
-    creator: "Diana",
-    userId: "diana",
-    target: 15,
-    current: 4.2,
-    deadline: "2026-10-01",
-    supporters: 6,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Diana",
-    createdAt: "2026-01-20T10:00:00.000Z",
-    visibility: "public",
-  },
-  {
-    id: 5,
-    title: "House down payment 🏡",
-    creator: "Eve",
-    userId: "eve",
-    target: 50,
-    current: 18.5,
-    deadline: "2027-03-15",
-    supporters: 12,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Eve",
-    createdAt: "2026-01-25T10:00:00.000Z",
-    visibility: "public",
-  },
-  {
-    id: 6,
-    title: "Master's degree fund",
-    creator: "Frank",
-    userId: "frank",
-    target: 8,
-    current: 8,
-    deadline: "2026-04-01",
-    supporters: 9,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Frank",
-    createdAt: "2026-01-01T10:00:00.000Z",
-    visibility: "public",
-    completed: true,
-  },
-];
-
-export function getGoalById(goalId: number): Goal | null {
-  return goals.find(g => g.id === goalId) || null;
+// Map a Supabase row (snake_case) to the Goal interface (camelCase)
+function rowToGoal(row: Record<string, unknown>): Goal {
+  return {
+    id: row.id as number,
+    title: row.title as string,
+    creator: row.creator as string,
+    userId: row.user_id as string,
+    target: Number(row.target),
+    current: Number(row.current),
+    deadline: row.deadline as string,
+    supporters: row.supporters as number,
+    avatar: row.avatar as string,
+    completed: row.completed as boolean,
+    grailAccountId: (row.grail_account_id as string | null) ?? undefined,
+    autoSaveConfig:
+      row.auto_save_enabled
+        ? {
+            enabled: true,
+            frequency: row.auto_save_frequency as Goal['autoSaveConfig'] extends object
+              ? Goal['autoSaveConfig']['frequency']
+              : never,
+            amountGrams: Number(row.auto_save_amount_grams),
+            recurringPaymentId: (row.auto_save_recurring_payment_id as string | null) ?? undefined,
+          }
+        : undefined,
+    createdAt: row.created_at as string,
+    visibility: row.visibility as 'public' | 'private',
+  };
 }
 
-export function updateGoalBalance(goalId: number, additionalGrams: number): Goal | null {
-  const idx = goals.findIndex(g => g.id === goalId);
-  if (idx === -1) return null;
-  goals[idx].current += additionalGrams;
-  if (goals[idx].current >= goals[idx].target) {
-    goals[idx].completed = true;
+export async function getGoals(filters?: { status?: string; userId?: string }): Promise<Goal[]> {
+  let query = supabase.from('goals').select('*').order('created_at', { ascending: false });
+
+  if (filters?.status === 'completed') {
+    query = query.eq('completed', true);
+  } else if (filters?.status === 'active') {
+    query = query.eq('completed', false);
   }
-  return goals[idx];
+
+  if (filters?.userId) {
+    query = query.eq('user_id', filters.userId);
+  }
+
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+  return (data ?? []).map(rowToGoal);
+}
+
+export async function getGoalById(goalId: number): Promise<Goal | null> {
+  const { data, error } = await supabase
+    .from('goals')
+    .select('*')
+    .eq('id', goalId)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null; // no rows
+    throw new Error(error.message);
+  }
+  return data ? rowToGoal(data) : null;
+}
+
+export async function createGoal(goal: Omit<Goal, 'id'>): Promise<Goal> {
+  const { data, error } = await supabase
+    .from('goals')
+    .insert({
+      title: goal.title,
+      creator: goal.creator,
+      user_id: goal.userId,
+      target: goal.target,
+      current: goal.current,
+      deadline: goal.deadline,
+      supporters: goal.supporters,
+      avatar: goal.avatar,
+      completed: goal.completed ?? false,
+      grail_account_id: goal.grailAccountId ?? null,
+      auto_save_enabled: goal.autoSaveConfig?.enabled ?? false,
+      auto_save_frequency: goal.autoSaveConfig?.frequency ?? null,
+      auto_save_amount_grams: goal.autoSaveConfig?.amountGrams ?? null,
+      auto_save_recurring_payment_id: goal.autoSaveConfig?.recurringPaymentId ?? null,
+      visibility: goal.visibility,
+    })
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return rowToGoal(data);
+}
+
+export async function updateGoalBalance(goalId: number, additionalGrams: number): Promise<Goal | null> {
+  // Fetch current value first, then increment
+  const existing = await getGoalById(goalId);
+  if (!existing) return null;
+
+  const newCurrent = existing.current + additionalGrams;
+  const completed = newCurrent >= existing.target;
+
+  const { data, error } = await supabase
+    .from('goals')
+    .update({ current: newCurrent, completed })
+    .eq('id', goalId)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return rowToGoal(data);
 }
